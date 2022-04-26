@@ -1,21 +1,20 @@
 import { Component } from '@angular/core';
+import { Observable } from 'rxjs';
 import { MoviesService } from './movies.service';
 
 @Component({
   template: `
-    <li *ngFor="let movie of movies">
-      {{ movie.nane }}
+    <li *ngFor="let movie of movies$ | async">
+      {{ movie.name }}
     </li>
   `,
 })
 export class MoviesPageComponent {
-  movies: Movie[] = [];
+  movies$: Observable<Movie[]> = this.store.select((state) => state.movies);
 
-  constructor(private movieService: MoviesService) {}
+  constructor(private store: Store<{ movies: Movie[] }>) {}
 
   ngOnInit() {
-    this.movieService
-      .getAll()
-      .subscribe((movies: Movie[]) => (this.movies = movies));
+    this.store.dispatch({ type: '[Movies Page] Load Movies' });
   }
 }
